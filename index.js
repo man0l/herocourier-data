@@ -23,12 +23,14 @@ const nick = new Nick()
 
         const data = await tab.evaluate((arg, callback) => {
             const data = []
+            /* eslint-disable */
             $(".o-overview-list__list-item").each((index, element) => {
                 data.push({
                     title: $(element).find(".m-offer-tile__title").text().trim(),
                     subtitle: $(element).find(".m-offer-tile__subtitle").text().trim()
                 })
             })
+            /* eslint-enable */
             callback(null, data)
         });
 
