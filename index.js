@@ -27,7 +27,13 @@ const nick = new Nick()
             $(".o-overview-list__list-item").each((index, element) => {
                 data.push({
                     title: $(element).find(".m-offer-tile__title").text().trim(),
-                    subtitle: $(element).find(".m-offer-tile__subtitle").text().trim()
+                    subtitle: $(element).find(".m-offer-tile__subtitle").text().trim(),
+                    image: $(element).find(".a-image-responsive").attr('data-src'),
+                    quantity: $(element).find(".m-offer-tile__quantity").text().trim(),
+                    basicPrice: $(element).find(".m-offer-tile__basic-price").text().trim(),
+                    percentDiscount: $(element).find(".a-pricetag__discount").text().trim(),
+                    oldPrice: $(element).find(".a-pricetag__old-price").text().trim(),
+                    price: $(element).find(".a-pricetag__price").text().trim()
                 })
             })
             /* eslint-enable */
