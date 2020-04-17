@@ -1,9 +1,18 @@
 version: '3'
 services:
-  chrome:
-      image: justinribeiro/chrome-headless
-      container_name: chrome
-      security_opt:
-       - 'seccomp:./chrome.json'
-      ports:
-       - '9222:9222'
+#  chrome:
+#      image: justinribeiro/chrome-headless
+#      container_name: chrome
+#      security_opt:
+#       - 'seccomp:./chrome.json'
+#      ports:
+#       - '9222:9222'
+  node:
+    build: .
+    container_name: node
+    security_opt:
+      - 'seccomp:./chrome.json'
+    volumes:
+      - .:/var/app
+    ports:
+      - '9222:9222'
