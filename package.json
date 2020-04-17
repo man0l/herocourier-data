@@ -20,6 +20,7 @@
   "homepage": "https://github.com/man0l/herocourier-data#readme",
   "dependencies": {
     "chrome-finder": "^1.0.7",
+    "csv-writer": "^1.6.0",
     "nickjs": "^0.3.7"
   },
   "devDependencies": {

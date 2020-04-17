@@ -1,20 +1,36 @@
 const Nick = require("nickjs");
 const findChrome = require("chrome-finder");
 const utils = require("./utils/utils");
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+
 
 let chromePath  = findChrome();
 let seedUrlFile = './seed-urls.txt';
 
 process.env.CHROME_PATH = chromePath;
 
-const nick = new Nick()
+const nick = new Nick();
+const csvWriter = createCsvWriter({
+    path: 'data.csv',
+    header: [
+        {id: 'title', title: 'Title'},
+        {id: 'subtitle', title: 'Subtitle'},
+        {id: 'image', title: 'Image'},
+        {id: 'quantity', title: 'Quantity'},
+        {id: 'basicPrice', title: 'Basic Price'},
+        {id: 'percentDiscount', title: 'Percent Discount'},
+        {id: 'oldPrice', title: 'Old Price'},
+        {id: 'price', title: 'Price'},
+    ]
+});
+
 
 ;(async () => {
 
     let lines = utils.readlines(seedUrlFile);
 
     const tab = await nick.newTab()
-
+    let csvData = [];
     for(let i = 0; i < lines.length; i++)
     {
         await tab.open(lines[i]);
@@ -40,8 +56,14 @@ const nick = new Nick()
             callback(null, data)
         });
 
-        console.log(JSON.stringify(data, null, 2));
+        csvData = [...data];
+        csvWriter
+            .writeRecords(data)
+            .then(()=> console.log('The CSV file was written successfully'));
+
     }
+
+    console.log(JSON.stringify(csvData, null, 2));
 
 })()
     .then(() => {
