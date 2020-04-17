@@ -1,41 +1,46 @@
-'use strict';
-
 const Nick = require("nickjs");
-const utils = require("./utils/utils");
 const findChrome = require("chrome-finder");
+const utils = require("./utils/utils");
 
-const nick = new Nick({
-    userAgent: "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36",
-});
-
-let seedUrlFile = './seed-urls.txt';
 let chromePath  = findChrome();
+let seedUrlFile = './seed-urls.txt';
 
-console.log(chromePath);
+process.env.CHROME_PATH = chromePath;
 
-(async () => {
+const nick = new Nick()
+
+;(async () => {
 
     let lines = utils.readlines(seedUrlFile);
-    lines.forEach(async (line) => {
-        const tab = await nick.newTab();
-        tab.open(line);
 
-        console.log('Injecting jQuery...');
-        await tab.inject('https://code.jquery.com/jquery-3.1.1.slim.min.js');
+    const tab = await nick.newTab()
 
-        const title = await tab.evaluate((arg, done) => {
-            done(null, jQuery('title').text())
+    for(let i = 0; i < lines.length; i++)
+    {
+        await tab.open(lines[i]);
+        await tab.untilVisible(".t-offers-overview");
+        await tab.inject("http://code.jquery.com/jquery-3.2.1.min.js");
+
+        const data = await tab.evaluate((arg, callback) => {
+            const data = []
+            $(".o-overview-list__list-item").each((index, element) => {
+                data.push({
+                    title: $(element).find(".m-offer-tile__title").text().trim(),
+                    subtitle: $(element).find(".m-offer-tile__subtitle").text().trim()
+                })
+            })
+            callback(null, data)
         });
 
-        console.log('The title is: ' + title);
-        tab.close();
-    });
+        console.log(JSON.stringify(data, null, 2));
+    }
+
 })()
     .then(() => {
-        console.log('job done');
-        nick.exit();
+        console.log("Job done!")
+        nick.exit()
     })
     .catch((err) => {
-        console.log(`something went wrong: ${err}`);
-        nick.exit();
-    });
+        console.log(`Something went wrong: ${err}`)
+        nick.exit(1)
+    })
